@@ -10,7 +10,7 @@ import (
 )
 
 func generateRandomString(length int) string {
-    const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
+    const charset = "abcdefghijklmnopqrstuvwxyz0123456789$"
 	seed := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(seed)
 
