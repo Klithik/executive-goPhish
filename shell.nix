@@ -7,6 +7,8 @@ pkgs.mkShellNoCC {
   packages = with pkgs; [
     nodePackages.gatsby-cli
     nodejs
+    docker
+    docker-compose
   ];
 
 }
