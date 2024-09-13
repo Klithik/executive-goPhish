@@ -1,4 +1,0 @@
-services:
-  gophish:
-    container_name: gophish
-    image: gophish/gophish:latest
