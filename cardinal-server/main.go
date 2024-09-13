@@ -5,7 +5,7 @@ import (
     "log"
     "net/http"
 )
-//this is good
+
 func main(){
     mux := http.NewServeMux()
     log.Print("Listening...")
