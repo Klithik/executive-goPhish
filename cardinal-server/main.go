@@ -1,15 +1,27 @@
 package main
 
 import (
-    "fmt"
-    "log"
-    "net/http"
-    "golang.org/x/crypto/bcrypt"
-    "time"
-    "math/rand"
+	"fmt"
+	"log"
+	"math/rand"
+	"net/http"
+	"os"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
-func generateRandomString(length int) string {
+func generatepassword(length int) {
+    const filename string
+    filename = "appkey.txt"
+
+    log.Println("[LOG] Checking for password")
+    if _, err != os.Stat(filename); os.IsNotExist(err) {
+        log.Println("[LOG] Password file found, importing...")
+        return nilfunc
+    }
+    log.Println("[LOG] Password file not found, creating new password")
+
     const charset = "abcdefghijklmnopqrstuvwxyz0123456789$"
 	seed := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(seed)
@@ -18,12 +30,21 @@ func generateRandomString(length int) string {
 	for i := range b {
 		b[i] = charset[r.Intn(len(charset))]
 	}
-	return string(b)
+    fmt.Println("App password: " + string(b))
+
+    //Encrypts password and checks for its success
+    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+    if err != nil {
+        log.Println("[ERROR] " + string(err))
+        panic(err)
+    }
+    pass := string(bytes)
+
+    os.WriteFile(filename, []byte(pass), 644)
+    log.Println("Password created, encrypted and saved into "+filename)
 }
 
 func encryptPassword(password string) (string, error) {
-    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-    return string(bytes), err
 }
 
 func comparePassword(password, hash string) bool {
@@ -33,14 +54,7 @@ func comparePassword(password, hash string) bool {
 
 func main(){
     mux := http.NewServeMux()
-    pass := generateRandomString(rand.Intn(5) + 12)
-    fmt.Println("App password: " + pass)
-    pass,err := encryptPassword(pass)
-    if err != nil {
-        panic(err)
-    }
-    log.Println("Encrypted password: " + pass)
-    log.Print("Listening...")
+    log.Print("[LOG] Listening...")
 
     go mux.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request){
         fmt.Println("Funciona")
