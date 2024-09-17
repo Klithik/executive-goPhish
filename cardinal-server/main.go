@@ -11,14 +11,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func generatepassword(length int) {
-    const filename string
-    filename = "appkey.txt"
+const filename string = "appkey.txt"
 
+func generatepassword(length int) {
     log.Println("[LOG] Checking for password")
-    if _, err != os.Stat(filename); os.IsNotExist(err) {
+    _, err := os.Stat(filename)
+    if err != nil {
         log.Println("[LOG] Password file found, importing...")
-        return nilfunc
+        dat, err := os.ReadFile(filename)
+        if err != nil {
+            panic(err)
+        }
+        log.Println("[LOG] Encrypted password: " + string(dat))
     }
     log.Println("[LOG] Password file not found, creating new password")
 
@@ -32,10 +36,9 @@ func generatepassword(length int) {
 	}
     fmt.Println("App password: " + string(b))
 
-    //Encrypts password and checks for its success
-    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+    //Encrypts password and checks for its success 
+    bytes, err := bcrypt.GenerateFromPassword([]byte(string(b)), 14)
     if err != nil {
-        log.Println("[ERROR] " + string(err))
         panic(err)
     }
     pass := string(bytes)
@@ -44,12 +47,17 @@ func generatepassword(length int) {
     log.Println("Password created, encrypted and saved into "+filename)
 }
 
-func encryptPassword(password string) (string, error) {
-}
-
-func comparePassword(password, hash string) bool {
-    err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-    return err == nil
+func comparePassword(hash string) bool {
+    password,err := os.ReadFile(filename)
+    if err != nil {
+        panic(err)
+    }
+    // THIS FUNCTION ALWAYS RETURNS ITS ERROR, SO IT MUST BE NIL IF THE PASSWORD
+    // IS CORRECT
+    if bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) != nil {
+        return false
+    }
+    return true
 }
 
 func main(){
