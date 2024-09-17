@@ -20,7 +20,8 @@ func generatepassword(length int) {
         log.Println("[LOG] Password file found, importing...")
         dat, err := os.ReadFile(filename)
         if err != nil {
-            panic(err)
+            log.Println("[ERROR] ")
+            log.Panic(err)
         }
         log.Println("[LOG] Encrypted password: " + string(dat))
     }
@@ -39,18 +40,24 @@ func generatepassword(length int) {
     //Encrypts password and checks for its success 
     bytes, err := bcrypt.GenerateFromPassword([]byte(string(b)), 14)
     if err != nil {
-        panic(err)
+        log.Println("[ERROR] ")
+        log.Panic(err)
     }
     pass := string(bytes)
 
-    os.WriteFile(filename, []byte(pass), 644)
+    err = os.WriteFile(filename, []byte(pass), 644)
+    if err != nil {
+        log.Println("[ERROR] ")
+        log.Panic(err)
+    }
     log.Println("Password created, encrypted and saved into "+filename)
 }
 
 func comparePassword(hash string) bool {
     password,err := os.ReadFile(filename)
     if err != nil {
-        panic(err)
+        log.Println("[ERROR] ")
+        log.Panic(err)
     }
     // THIS FUNCTION ALWAYS RETURNS ITS ERROR, SO IT MUST BE NIL IF THE PASSWORD
     // IS CORRECT
